@@ -132,7 +132,7 @@ def checkout():
 
 @app.route("/success", methods=["POST"])
 def success_post():
-    # Build order from form
+
     order = {
         "email": request.form.get("email-cus"),
         "name": request.form.get("name-cus"),
@@ -159,22 +159,18 @@ def success_post():
                 products[idx][field] = request.form[key]
     order["products"] = products
 
-    # Save order temporarily in session
     session["order_success"] = order
 
     send_order_to_telegram(order)
 
-    # Clear cart session
     session.pop("cart", None)
 
-    # Redirect to GET endpoint
     return redirect(url_for("success_get"))
 
 @app.route("/success")
 def success_get():
     order = session.pop("order_success", None)
     if not order:
-        # No order in session → redirect to home page
         return redirect(url_for("index"))
 
     return render_template("pages/success.html", order=order)
