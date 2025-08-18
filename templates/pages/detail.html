@@ -1,0 +1,99 @@
+{% extends "layouts/base.html" %}
+
+{% block content %}
+<div class="single-product">
+    <div class="container">
+        <div class="single-product-con">
+            <div class="col-1">
+                <div class="row sub-display-product-image">
+                    <div class="col-sub-image">
+                        <img class="sub-image" src="{{ url_for('static', filename='images/' + product['image1']) }}">
+                    </div>
+                    <div class="col-sub-image">
+                        <img class="sub-image" src="{{ url_for('static', filename='images/' + product['image2']) }}">
+                    </div>
+                </div>
+                <div id="slide-product-image" class="row display-product-image">
+                    <img id="main-image" loading="lazy" src="{{ url_for('static', filename='images/' + product['image1']) }}">
+                </div>
+            </div>
+
+            <div class="col-2">
+                <div class="row">
+                    <div class="status-stock">
+                        {% if product['status'] == 'Coming Soon' %}
+                            Coming Soon
+                        {% else %}
+                            {% set total_stock = product['S']|int + product['M']|int + product['L']|int + product['XL']|int + product['XXL']|int %}
+                            {% if total_stock <= 5 %}
+                                Only a few items left
+                            {% endif %}
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="row">
+                    <h2 class="product-name">{{ product['title'] }}</h2>
+                </div>
+
+                <div class="row">
+                    <div class="product-category">{{ product['category'] }}</div>
+                </div>
+
+                <div class="row">
+                    <div class="product-price">${{ "%.2f"|format(product['price']) }}</div>
+                </div>
+
+                <div class="row">
+                    <div class="product-size">
+                        {% if product['status'] != 'Coming Soon' %}
+                            <h4 class="error_size_select">Select Size</h4>
+                        {% endif %}
+
+                        <div class="size-list">
+                            {% if product['status'] != 'Coming Soon' %}
+                                {% for size in ['S', 'M', 'L', 'XL', 'XXL'] %}
+                                    {% set qty = product[size]|int %}
+                                    <div class="size {% if qty == 0 %}disabled{% endif %}" data-size="{{ size }}">{{ size }}</div>
+                                {% endfor %}
+                            {% endif %}
+                        </div>
+                        <p class="error_size_message">Please select a size before add to cart!</p>
+                    </div>
+
+                    <div class="size-chart">
+                        {% if product['status'] == 'Coming Soon' %}
+                            <div>"Get notified when this product is on sale!"</div>
+                        {% else %}
+                            <div>Check <span>Size Chart</span> to find the perfect fit for your shirt.</div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="row">
+                    <form action="/add-to-cart" method="POST" onsubmit="return validateSizeSelection();">
+                        <input type="hidden" name="product_id" value="{{ product['id'] }}">
+                        <input type="hidden" name="product_name" value="{{ product['title'] }}">
+                        <input type="hidden" name="product_qty" value="1">
+                        <input type="hidden" name="product_size" id="selectedSize">
+
+                        <div class="product-add-to-cart">
+                            {% if product['status'] != 'Coming Soon' %}
+                                <button type="submit" name="add-to-cart" class="btn btn-add-cart">
+                                    Add to cart <img src="{{ url_for('static', filename='images/icons/arrow-right.png') }}">
+                                </button>
+                            {% endif %}
+                        </div>
+                    </form>
+                    {% if product['status'] == 'Coming Soon' %}
+                        <button class="btn-notify" id="notifyBtn">
+                            Notify me! <img src="{{ url_for('static', filename='images/icons/arrow-right.png') }}">
+                        </button>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

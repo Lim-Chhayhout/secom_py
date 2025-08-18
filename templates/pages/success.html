@@ -1,0 +1,94 @@
+{% extends "layouts/base.html" %}
+
+{% block content %}
+<div class="order-confirmation">
+    <div class="container">
+        <div class="order-confirmation-content">
+            <div class="col-1">
+                <div class="success-display">
+                    <div class="icon-success">
+                        <div class="circle">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="30px" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M20 6 9 17l-5-5"/>
+                            </svg>
+                        </div>
+                    </div>
+                    <header>Thank you for your order</header>
+                    <div class="notice-email">
+                        An email confirmation has been sent to
+                        <strong>{{ order.email }}</strong>
+                    </div>
+                </div>
+            </div>
+            <div class="col-2">
+                <div class="receipt-con">
+                    <div class="order">
+                        <div class="detail">
+                            <div class="col">
+                                <h6>Customer</h6>
+                                <span>{{ order.name }}</span>
+                            </div>
+                            <div class="col">
+                                <h6>Phone</h6>
+                                <span>{{ order.phone }}</span>
+                            </div>
+                            <div class="col">
+                                <h6>Email</h6>
+                                <span>{{ order.email }}</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="shipping-address">
+                        <header>Shipping Address</header>
+                        <div class="detail">
+                            <span>{{ order.address }}</span><br>
+                            <div>{{ order.country }}</div>
+                        </div>
+                    </div>
+                    <div class="payment-method">
+                        <header>Payment Method</header>
+                        <div class="detail"><span>{{ order.payment_method|capitalize }}</span></div>
+                    </div>
+                </div>
+                <div class="order-summary">
+                    <div class="total-amount">
+                        <header>Total Amount</header>
+                        <div><span>${{ "%.2f"|format(order.total) }}</span></div>
+                    </div>
+                    <div class="summary-con">
+                        <div class="sub-total">
+                            <header>Subtotal</header>
+                            <div><span>${{ "%.2f"|format(order.subtotal) }}</span></div>
+                        </div>
+                        <div class="delivery-fee">
+                            <header>Delivery Fee</header>
+                            <div><span>${{ "%.2f"|format(order.delivery_fee) }}</span></div>
+                        </div>
+                        {% if order.discount_rate %}
+                        <div class="promo-code">
+                            <header>Discount ({{ order.discount_rate }}%)</header>
+                            <div><span>- ${{ "%.2f"|format(order.discount_amount) }}</span></div>
+                        </div>
+                        {% endif %}
+                    </div>
+                    <div class="ordered-detail">
+                        <header>Ordered Details</header>
+                        <div class="ordered-items">
+                            {% for product in order.products %}
+                                <div class="item">
+                                    <div class="item-num">{{ loop.index }}</div>
+                                    <div class="item-des">
+                                        <div class="name">{{ product.name }}</div>
+                                        <div class="size">Size: {{ product.size }}</div>
+                                    </div>
+                                    <div class="qty"><span>x{{ product.quantity }}</span></div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,165 @@
+{% extends "layouts/base.html" %}
+
+{% block content %}
+    <div class="checkout">
+        <div class="container">
+            <div class="checkout-content">
+                <div class="col-1">
+                    <form action="/success" id="checkout-form" method="POST">
+                        <div class="row contact">
+                            <header>Contact</header>
+                            <div class="lim-input" id="email-input">
+                                <span id="span-holder-email-input">Email</span>
+                                <!-- email-cus -->
+                                <input type="email" name="email-cus" id="email-user" class="lim-input-style" required>
+                            </div>
+                            <div class="lim-input" id="username-instagram-input">
+                                <span id="span-holder-instagram-input">@Instagram (Optional)</span>
+                                <!-- instagram-cus -->
+                                <input type="text" name="instagram-cus" id="instagram-user" class="lim-input-style">
+                            </div>
+                        </div>
+                        <div class="row delivery-details">
+                            <header>Delivery</header>
+                            <div class="handle-con-row">
+                                <div class="lim-selected" id="country-input">
+                                    <span id="span-holder-country-input">Country/Region</span>
+                                    <div class="lim-selected-style">
+                                        <div>Cambodia</div>
+                                        <!-- country-cus -->
+                                        <input type="hidden" value="Cambodia" id="country-user" name="country-cus">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="lim-input" id="address-input">
+                                <span id="span-holder-address-input">Address</span>
+                                <!-- address-cus -->
+                                <input type="text" name="address-cus" id="address-user" class="lim-input-style" required>
+                            </div>
+                            <div class="handle-con-row">
+                                <div class="lim-input" id="name-user-input">
+                                    <span id="span-holder-name-input">Full Name</span>
+                                    <!-- name-cus -->
+                                    <input type="text" name="name-cus" id="name-user" class="lim-input-style" required>
+                                </div>
+                                <div class="lim-input" id="phonenumber-user-input">
+                                    <span id="span-holder-phonenumber-input">Phone number</span>
+                                    <!-- phonenumber-cus -->
+                                    <input type="text" name="phonenumber-cus" id="phonenumber-user" class="lim-input-style" required>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row payment">
+                            <header>Payment</header>
+                            <div class="lim-option-payment">
+                                <div class="option-con-payment" data-value="aba-pay">
+                                    <div class="branding-payment">
+                                        <img src="{{ url_for('static', filename='images/icons/ic_ABA-PAY_3x.png') }}" width="60px" alt="logo aba pay">
+                                        <div class="title">ABA PAY</div>
+                                    </div>
+                                    <div class="description">Scan to pay with aba app</div>
+                                </div>
+
+                                <div class="option-con-payment" data-value="khqr-pay">
+                                    <div class="branding-payment">
+                                        <img src="{{ url_for('static', filename='images/icons/KHQR icon.png') }}" width="60px" alt="logo khqr">
+                                        <div class="title">KHQR</div>
+                                    </div>
+                                    <div class="description">Scan to pay with khqr</div>
+                                </div>
+
+                                <div class="option-con-payment" data-value="cash-on-delivery">
+                                    <div class="branding-payment">
+                                        <img src="{{ url_for('static', filename='images/icons/cod icon.png') }}" width="60px" alt="logo cash">
+                                        <div class="title">Cash on Delivery</div>
+                                    </div>
+                                    <div class="description">Pay with cash</div>
+                                </div>
+                            </div>
+                                <!-- hidden input -->
+                            <input type="hidden" name="payment_method" id="payment-method">
+
+                        </div>
+                        <div class="row continue-payment">
+                            <input type="hidden" name="subtotal" value="{{ subtotal }}">
+                            <input type="hidden" name="discount_amount" value="{{ discount_amount }}">
+                            <input type="hidden" name="delivery_fee" value="{{ delivery_fee }}">
+                            <input type="hidden" name="total" value="{{ total }}">
+
+                            {% for item in cart_items %}
+                                <input type="hidden" name="products[{{ loop.index0 }}][name]" value="{{ item.title }}">
+                                <input type="hidden" name="products[{{ loop.index0 }}][size]" value="{{ item.product_size }}">
+                                <input type="hidden" name="products[{{ loop.index0 }}][quantity]" value="{{ item.product_qty }}">
+                            {% endfor %}
+                            <!-- sub_checkout.php -->
+                            <button type="submit" class="btn-continue-payment"> Complete Order <img src="{{ url_for('static', filename='images/icons/arrow-right.png') }}"></button>
+                        </div>
+                    </form>
+                </div>
+                <div class="col-2">
+                    <div class="row">
+                       <div class="de-checkout">
+                            <header>Amount to pay</header>
+                            <div>
+                                ${{ "%.2f"|format(total) }}
+                            </div>
+                        </div>
+
+                        <div class="de-con">
+                            <div class="de-subtotal">
+                                <header>Subtotal</header>
+                                <div class="final-subtotal">
+                                    ${{ "%.2f"|format(subtotal) }}
+                                </div>
+                            </div>
+
+                            {% if discount_rate %}
+                            <div class="de-discount">
+                                <header>Discount ({{ discount_rate }}%)</header>
+                                <div class="discount-amount">
+                                    - ${{ "%.2f"|format(discount_amount) }}
+                                </div>
+                            </div>
+                            {% endif %}
+
+                            <div class="de-delivery-fee">
+                                <header>Estimated delivery</header>
+                                <div class="delivery-cost">${{ "%.2f"|format(delivery_fee) }}</div>
+                            </div>
+                        </div>
+
+                        <div class="line"></div>
+                        <div class="de-promo-code">
+                            <header>Discounted Code</header>
+                            <div>
+
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="de-checkout">
+                            <header>Order items
+
+                            </header>
+                        </div>
+                        <div class="items-in-cart">
+                            {% for item in cart_items %}
+                            <div class="item">
+                                <div class="count-item">x{{ item['product_qty'] }}</div>
+                                <div class="image-item">
+                                    <img src="{{ url_for('static', filename='images/' + item['image']) }}" alt="{{ item['title'] }}">
+                                </div>
+                                <div class="model-item">
+                                    <div class="name-item">{{ item['title'] }}</div>
+                                    <div class="size-item" style="opacity: 50%; font-size: 14px;">Size: {{ item['product_size'] }}</div>
+                                    <div class="price-item">${{ "%.2f"|format(item['price'] * item['product_qty']) }}</div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

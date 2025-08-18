@@ -1,0 +1,31 @@
+<div class="list all-products">
+    <div class="container">
+        <div class="grid-list-product">
+            {% for product in products %}
+                <a class="card" href="{{ url_for('detail', product_id=product['id']) }}">
+                    <div class="product-image">
+                        <img class="st-image" src="{{ url_for('static', filename='images/' + product['image1']) }}">
+                        <img class="nd-image" src="{{ url_for('static', filename='images/' + product['image2']) }}">
+                    </div>
+                    <div class="row product-details">
+                        <div class="status-stock">
+                            {% if product['status'] == 'Coming Soon' %}
+                                Coming Soon
+                            {% else %}
+                                {% set total_stock = product['S']|int + product['M']|int + product['L']|int + product['XL']|int + product['XXL']|int %}
+                                {% if total_stock == 0 %}
+                                    Out of Stock
+                                {% elif total_stock <= 5 %}
+                                    Only a few items left
+                                {% endif %}
+                            {% endif %}
+                        </div>
+                        <div class="product-name">{{ product['title'] }}</div>
+                        <div class="product-category">{{ product['category'] }}</div>
+                        <div class="product-price">${{ "%.2f"|format(product['price']) }}</div>
+                    </div>
+                </a>
+            {% endfor %}
+        </div>
+    </div>
+</div>

@@ -1,0 +1,122 @@
+{% extends "layouts/base.html" %}
+
+{% block content %}
+   <div class="cart">
+    <div class="container">
+        <div class="cart-content">
+            {% if cart_items|length == 0 %}
+                <div class='empty-cart'>
+                    <div class='header'>Your cart is empty!</div>
+                    <div>Your cart is empty for now—add something to fill it up!</div>
+                    <a href="{{ url_for('index') }}" class='btn-continue-shop'>
+                        Continue Shopping <img src="{{ url_for('static', filename='images/icons/arrow-right.png') }}" alt='arrow'>
+                    </a>
+                </div>
+            {% else %}
+                <div class="col-1">
+                    <div class="row header"><h4>Your Cart</h4></div>
+                    {% for item in cart_items %}
+                        <div class="row cart-con" data-product-id="{{ item['product_id'] }}" data-product-size="{{ item['product_size'] }}">
+                            <div class="cart-item-image">
+                                <a href="{{ url_for('detail', product_id=item['product_id']) }}">
+                                    <img src="{{ url_for('static', filename='images/' + item['image']) }}" alt="Product Image">
+                                </a>
+                            </div>
+                            <div class="cart-item-details">
+                                <div class="row-incart">
+                                    <div class="cart-item-name">{{ item['title'] }}</div>
+                                    <div class="cart-item-remove">
+                                        <div class="btn-remove"><div></div><div></div></div>
+                                    </div>
+                                </div>
+                                <div class="cart-item-category">{{ item['category'] }}</div>
+                                <div class="cart-item-size"><span>Size: </span>{{ item['product_size'] }}</div>
+                                <div class="row-incart">
+                                    <div class="cart-item-quantity">
+                                        <div class="product-quantity">
+                                            <input type="hidden" name="hidden-qty-instock" class="qty-in-stock" value="{{ item['qty_in_stock'] }}" readonly>
+                                            <input type="hidden" name="hidden-price-per-product" class="price-per-product" value="{{ item['price'] }}">
+                                            <div class="quantity-decrease">-</div>
+                                            {% if item['qty_in_stock'] == 0 %}
+                                                <input type="text" name="item-qty-input" class="quantity-input" value="0" readonly>
+                                            {% else %}
+                                                <input type="text" name="item-qty-input" class="quantity-input" value="{{ item['product_qty'] }}" readonly>
+                                            {% endif %}
+                                            <div class="quantity-increase">+</div>
+                                        </div>
+                                        {% if item['qty_in_stock'] == 0 %}
+                                            <div class='less-instock'>Out of Stock</div>
+                                        {% elif item['qty_in_stock'] <= 5 %}
+                                            <div class='less-instock'>Only {{ item['qty_in_stock'] }} left in stock</div>
+                                        {% endif %}
+                                    </div>
+                                    <div class="cart-item-price">
+                                        <div class="product-sub-total-price">
+                                            <div class="sub-total-price">${{ "%.2f"|format(item['price'] * item['product_qty']) }}</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+
+                <form id="cart-form" method="POST" action="/checkout">
+                    <div class="col-2">
+                        <div class="row header"><h4>Summary</h4></div>
+                        <div class="row sub-total-cart">
+                            <h6 class="cart-count">{{ cart_items|length }} item(s)</h6>
+                            <div class="total-cart-price">
+                                ${{ "%.2f"|format(cart_items|sum(attribute='product_qty') * cart_items[0]['price'] if cart_items else 0) }}
+                            </div>
+                        </div>
+                        <div class="row delivery"><h6 style="opacity:50%;">Delivery costs - estimated in the next step.</h6></div>
+                        <div class="row line"></div>
+                        <div class="row total-cart">
+                            <h6>Total</h6>
+                            <div id="amount-to-pay">
+                                ${{ "%.2f"|format(cart_items|sum(attribute='product_qty') * cart_items[0]['price'] if cart_items else 0) }}
+                            </div>
+                        </div>
+                        <input type="hidden" name="final-subtotal" id="final-subtotal">
+                        <!-- --- -->
+                        <div class="row promo-code">
+                            <h6 id="trigger-input"><span>Use a promo code</span></h6>
+                            <div class="lim-input" id="promo-code-input">
+                                <span id="span-holder-conpon-input">Enter your promo code</span>
+                                <input type="text" name="promo-code" id="coupon-input" class="lim-input-style" autocomplete="off">
+                                <div id="submit-coupon" name="btn-submit-coupon">
+                                    <div></div>
+                                    <div></div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- get -->
+                        <input type="hidden" id="discounted-code" name="discounted-code" >
+                        <input type="hidden" id="discounted-id" name="discounted-id" >
+                        <!-- --- -->
+                        <div class="row" id="message-discount">
+                            <div>
+                                Enjoy a <span id="discount-rate"></span> discount with promo code.
+                            </div>
+                        </div>
+                        <div class="row" id="message-wrong-coupon-code">
+                            The coupon code you entered is incorrect or expired.
+                        </div>
+                        <div class="row" id="message-no-promo-code">
+                            Please enter a valid promo code to apply the discount.
+                        </div>
+                        <div class="row">
+                            <button type="submit" class="btn-check-out" name="check-out">
+                                Checkout <img src="{{ url_for('static', filename='images/icons/arrow-right.png') }}" alt="arrow">
+                            </button>
+                        </div>
+                    </div>
+                </form>
+
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+{% endblock %}
