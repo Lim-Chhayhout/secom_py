@@ -2,7 +2,6 @@ from teleBotpackage.sendText import send_text
 from teleBotpackage.sendPhoto import send_photo
 
 def send_order_to_telegram(order):
-    token = '7516838493:AAHLcnGZy5ntw6aQ_K1IRVW3NwHGdVS3QvU'
     chat_id = '@su413test'
 
     products_text = "\n".join([f"{p['name']} (Size: {p['size']}) x{p['quantity']}" for p in order['products']])
